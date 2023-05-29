@@ -1,0 +1,565 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table User {
+  id Int [pk, increment]
+  email String [unique, not null]
+  userName String [unique]
+  password String
+  phoneNumber String [unique]
+  accountType AccountType [not null, default: 'BASIC']
+  isDeleted Boolean [default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  roles Role
+  Profile Profile
+  Store Store [not null]
+  Cart Cart [not null]
+  Order Order [not null]
+  Product Product [not null]
+  UserPermission UserPermission [not null]
+  worker UserPermission [not null]
+  ProductReview ProductReview [not null]
+  productWishList productWishList [not null]
+  StoreReview StoreReview [not null]
+  BitmartApiKey BitmartApiKey [not null]
+  UserPlan UserPlan
+  storeUser storeUser
+  subscriptionOrder subscriptionOrder [not null]
+}
+
+Table Role {
+  id Int [pk, increment]
+  role RoleType [not null, default: 'USER']
+  User User
+  userId Int [unique, not null]
+  isDeleted Boolean [not null, default: false]
+}
+
+Table Permissions {
+  id Int [pk, increment]
+  task_name String [not null]
+  subtask String [not null]
+  isDeleted Boolean [not null, default: false]
+  userPermission UserPermission [not null]
+
+  indexes {
+    (task_name, subtask) [unique]
+  }
+}
+
+Table UserPermission {
+  userId Int [not null]
+  user User [not null]
+  seller User [not null]
+  sellerId Int [not null]
+  permissionId Int [not null]
+  Permissions Permissions [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (userId, permissionId) [pk]
+  }
+}
+
+Table Profile {
+  id Int [pk, increment]
+  firstName String
+  lastName String
+  address String
+  city String
+  brief String
+  state String
+  country String
+  zipCode String
+  role Int
+  numberOfCollections Int
+  numberOfFollower Int
+  numberOfFollowing Int
+  userAppleId String
+  isEmailVerifiedAt Boolean [default: false]
+  numberOfNftFavourite Int [not null, default: 0]
+  avatarUrl String
+  avatarThumbnailUrl String
+  photoCoverUrl String
+  isInternalUser Boolean [default: false]
+  lwcTokenBalance Float
+  usdtTokenBalance Float [not null, default: 0]
+  isBitmartConnected Boolean [not null, default: false]
+  isDeleted Boolean [not null, default: false]
+  selfDeletedAt DateTime
+  status String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user User [not null]
+  userId Int [unique, not null]
+  plan UserPlan [not null]
+  bitmartApiKey BitmartApiKey
+  SocailNetwork SocailNetwork [not null]
+  bitmartApiKeyId Int
+}
+
+Table BitmartApiKey {
+  id Int [pk, increment]
+  memo String [not null]
+  accessKey String [not null]
+  user User [not null]
+  userId Int [not null]
+  Profile Profile [not null]
+}
+
+Table SocailNetwork {
+  id Int [pk, increment]
+  type String [not null]
+  url String
+  Profile Profile
+  profileId Int
+
+  indexes {
+    (type, profileId) [unique]
+  }
+}
+
+Table Product {
+  id Int [pk, increment]
+  name String [not null]
+  image String
+  gallery ProductImage [not null]
+  price Int [not null]
+  currency Currency [not null, default: 'EURO']
+  tax Float [not null]
+  shipping String [not null]
+  brand String [not null]
+  country String [not null]
+  size String [not null]
+  description String [not null]
+  condition String [not null]
+  note String
+  total Int [not null]
+  sold Int [not null]
+  remained Int [not null]
+  store Store [not null]
+  storeId Int [not null]
+  User User [not null]
+  userId Int [not null]
+  isDeleted Boolean [not null, default: false]
+  isPromoted Boolean [not null, default: false]
+  status Status [not null, default: 'ARCHIVED']
+  category Category
+  categoryId Int
+  reviews ProductReview [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  productWishList productWishList [not null]
+  CartItems CartItems [not null]
+  productPromotion productPromotion [not null]
+}
+
+Table ProductReview {
+  id Int [pk, increment]
+  title String
+  rating Float [not null]
+  review String
+  isDeleted Boolean [not null, default: false]
+  product Product [not null]
+  productId Int [not null]
+  user User [not null]
+  isDelivered Boolean [not null, default: false]
+  userId Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  ReviewGallery ProductReviewGallery [not null]
+}
+
+Table storePromotion {
+  id Int [pk, increment]
+  store Store [not null]
+  storeId Int [not null]
+  keyword Json
+  currency Currency [not null, default: 'LWC']
+  expiredTime DateTime
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+}
+
+Table productPromotion {
+  id Int [pk, increment]
+  product Product [not null]
+  productId Int [not null]
+  keyword Json
+  currency Currency [not null, default: 'LWC']
+  expiredTime DateTime
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table ProductReviewGallery {
+  id Int [pk, increment]
+  url String
+  altText String
+  isDeleted Boolean [not null, default: false]
+  ProductReview ProductReview [not null]
+  productReviewId Int [not null]
+}
+
+Table ProductImage {
+  id Int [pk, increment]
+  url String [not null]
+  altText String [not null]
+  isDeleted Boolean [not null, default: false]
+  product Product [not null]
+  productId Int [not null]
+}
+
+Table Category {
+  id Int [pk, increment]
+  name String [unique, not null]
+  description String [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+  product Product [not null]
+  Store Store [not null]
+}
+
+Table Country {
+  id Int [pk, increment]
+  name String [unique, not null]
+  url String
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Store {
+  id Int [pk, increment]
+  name String [not null]
+  location String [not null]
+  image String
+  status Status [not null, default: 'ARCHIVED']
+  description String
+  rate Float [not null, default: 0]
+  start_time_close Int
+  end_time_close Int
+  openDateTime DateTime
+  isInvisible Boolean [not null, default: false]
+  isPromoted Boolean [not null, default: false]
+  isDeleted Boolean [not null, default: false]
+  user User [not null]
+  userId Int [not null]
+  Category Category [not null]
+  categoryId Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  images StoreImage [not null]
+  review StoreReview [not null]
+  Product Product [not null]
+  storeView storeView [not null]
+  CartItems CartItems [not null]
+  Order Order [not null]
+  storePromotion storePromotion [not null]
+}
+
+Table storeView {
+  id Int [pk, increment]
+  store Store [not null]
+  storeId Int [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table productWishList {
+  id Int [pk, increment]
+  user User [not null]
+  userId Int [not null]
+  product Product [not null]
+  productId Int [not null]
+}
+
+Table StoreReview {
+  id Int [pk, increment]
+  review String [not null]
+  rating Float [not null]
+  store Store [not null]
+  storeId Int [not null]
+  user User [not null]
+  userId Int [not null]
+  createdAt DateTime [default: `now()`]
+  updatedAt DateTime
+
+  indexes {
+    (storeId, userId) [unique]
+  }
+}
+
+Table StoreImage {
+  id Int [pk, increment]
+  url String [not null]
+  isDeleted Boolean [not null, default: false]
+  store Store [not null]
+  storeId Int [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Cart {
+  id Int [pk, increment]
+  userId Int [not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  user User [not null]
+  Order Order [not null]
+  CartItems CartItems [not null]
+}
+
+Table CartItems {
+  id Int [pk, increment]
+  cartId Int [not null]
+  productId Int [not null]
+  total_price Int [not null]
+  total_qty Int [not null]
+  storeId Int [not null]
+  isCheckout Boolean [not null, default: false]
+  isReviewed Boolean [not null, default: false]
+  product Product [not null]
+  cart Cart [not null]
+  store Store [not null]
+  updatedAt DateTime [not null]
+  createdAt DateTime [default: `now()`, not null]
+
+  indexes {
+    (cartId, productId) [unique]
+  }
+}
+
+Table Order {
+  id String [pk]
+  userId Int [not null]
+  qty Int [not null]
+  items Int [not null]
+  storeId Int [not null]
+  cartId Int [not null]
+  discount Float [not null]
+  tax Float [not null]
+  deliveryFee Float [not null]
+  deliveryTime DateTime [not null]
+  isCancelled Boolean [not null, default: false]
+  paymentId Int [not null]
+  address String [not null]
+  totalAmount Float [not null]
+  RejectDesc String [not null, default: 'null']
+  orderStatus OrderStatus [not null, default: 'PENDING']
+  trackingStatus TrackingStatus
+  AcceptenceStatus OrderStatusEnum [not null, default: 'PENDING']
+  Cart Cart [not null]
+  Store Store [not null]
+  user User [not null]
+  PaymentDetails PaymentDetails
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+
+  indexes {
+    (cartId, storeId) [unique]
+  }
+}
+
+Table PaymentDetails {
+  id Int [pk, increment]
+  orderId String [unique, not null]
+  totalAmount Int [not null]
+  isDeleted Boolean [not null, default: false]
+  Order Order [not null]
+  status PaymentStatus [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table Plan {
+  id Int [pk, increment]
+  name String [not null]
+  price Float [not null]
+  currency Currency [not null, default: 'LWC']
+  benefit Json [not null]
+  isPopular Boolean [not null, default: false]
+  expireTime Int [not null]
+  isDeleted Boolean [not null, default: false]
+  UserPlan UserPlan [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  subscriptionOrder subscriptionOrder [not null]
+}
+
+Table UserPlan {
+  id Int [pk, increment]
+  Plan Plan [not null]
+  planId Int [not null]
+  User User [not null]
+  userId Int [unique, not null]
+  expireTime Int [not null]
+  isDeleted Boolean [not null, default: false]
+  subscriptionOrder subscriptionOrder [not null]
+  subscriptionPlanId String [unique, not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Profile Profile
+  profileId Int
+}
+
+Table storeUser {
+  id Int [pk, increment]
+  User User [not null]
+  userId Int [unique, not null]
+  isDeleted Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+}
+
+Table subscriptionOrder {
+  id String [pk]
+  user User [not null]
+  userId Int [not null]
+  Plan Plan [not null]
+  planId Int [not null]
+  amount Float [not null]
+  orderStatus OrderStatusEnum [not null, default: 'PENDING']
+  isCancelled Boolean [not null, default: false]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  UserPlan UserPlan
+  orderDesc String [not null]
+  currencySymbol Currency [not null, default: 'LWC']
+}
+
+Enum AccountType {
+  BASIC
+}
+
+Enum RoleType {
+  USER
+  ADMIN
+  SUBACCOUNT
+}
+
+Enum Currency {
+  EURO
+  USD
+  GBP
+  JPY
+  AUD
+  LWC
+}
+
+Enum Status {
+  ACTIVE
+  ARCHIVED
+  DRAFT
+}
+
+Enum OrderStatus {
+  PENDING
+  FULFILLED
+  UNFULFILLED
+}
+
+Enum TrackingStatus {
+  DELIVERING
+  DONE
+  RETURNED
+}
+
+Enum OrderStatusEnum {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+Enum PaymentStatus {
+  FAILED
+  DONE
+}
+
+Ref: Role.userId - User.id
+
+Ref: UserPermission.userId > User.id
+
+Ref: UserPermission.sellerId > User.id
+
+Ref: UserPermission.permissionId > Permissions.id
+
+Ref: Profile.userId - User.id
+
+Ref: Profile.bitmartApiKeyId > BitmartApiKey.id
+
+Ref: BitmartApiKey.userId > User.id
+
+Ref: SocailNetwork.profileId > Profile.id
+
+Ref: Product.storeId > Store.id
+
+Ref: Product.userId > User.id
+
+Ref: Product.categoryId > Category.id
+
+Ref: ProductReview.productId > Product.id
+
+Ref: ProductReview.userId > User.id
+
+Ref: storePromotion.storeId > Store.id
+
+Ref: productPromotion.productId > Product.id
+
+Ref: ProductReviewGallery.productReviewId > ProductReview.id
+
+Ref: ProductImage.productId > Product.id
+
+Ref: Store.userId > User.id
+
+Ref: Store.categoryId > Category.id
+
+Ref: storeView.storeId > Store.id
+
+Ref: productWishList.userId > User.id
+
+Ref: productWishList.productId > Product.id
+
+Ref: StoreReview.storeId > Store.id
+
+Ref: StoreReview.userId > User.id
+
+Ref: StoreImage.storeId > Store.id
+
+Ref: Cart.userId > User.id
+
+Ref: CartItems.productId > Product.id
+
+Ref: CartItems.cartId > Cart.id
+
+Ref: CartItems.storeId > Store.id
+
+Ref: Order.cartId > Cart.id
+
+Ref: Order.storeId > Store.id
+
+Ref: Order.userId > User.id
+
+Ref: PaymentDetails.orderId - Order.id
+
+Ref: UserPlan.planId > Plan.id
+
+Ref: UserPlan.userId - User.id
+
+Ref: UserPlan.subscriptionPlanId - subscriptionOrder.id
+
+Ref: UserPlan.profileId > Profile.id
+
+Ref: storeUser.userId - User.id
+
+Ref: subscriptionOrder.userId > User.id
+
+Ref: subscriptionOrder.planId > Plan.id
