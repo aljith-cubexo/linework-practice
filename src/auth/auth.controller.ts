@@ -1,23 +1,37 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, ParseEnumPipe, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignupUserDto } from './Dto/signup-user.dto';
-import { SigninUserDto } from './Dto/signin-user-dto';
+import { SignupDto } from './Dto/signup-dto';
+import { SigninDto } from './Dto/signin-dto';
+
+enum Role {
+    USER='user',
+    SELLER='seller',
+    ADMIN='admin'
+}
 
 @Controller('auth')
 export class AuthController {
 
     constructor(private readonly authService: AuthService){};
 
-    @Post('signup')
+    @Post('signup/:usertype')
     signupUser(
-        @Body() singupUserDto: SignupUserDto
+        @Body() singupDto: SignupDto,
+        @Param('usertype', new ParseEnumPipe(Role)) userType: Role
     ){
-        return this.authService.signupUser(singupUserDto)
+        switch (userType) {
+            case 'user':
+                return this.authService.signupUser(singupDto);
+            case 'seller':
+                return this.authService.signupSeller(singupDto);
+            case 'admin': 
+                return this.authService.signupAdmin(singupDto);
+        }
     }
 
     @Post('signin')
     signinUser(
-        @Body() signinUserDto: SigninUserDto
+        @Body() signinUserDto: SigninDto 
     ){
         return this.authService.signinUser(signinUserDto);
     }

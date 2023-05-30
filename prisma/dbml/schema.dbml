@@ -443,7 +443,7 @@ Enum AccountType {
 Enum RoleType {
   USER
   ADMIN
-  SUBACCOUNT
+  SELLER
 }
 
 Enum Currency {

@@ -8,6 +8,16 @@ export class UserService {
 
     constructor(private readonly prisma: PrismaService){};
 
+    private getPath(){
+        let path: string[] | string = __dirname.split('/');
+        path.pop();
+        path.pop();
+        path.push('files');
+        path.push('profile');
+        path = path.join('/');
+        return path;
+    }
+
     async updateProfile(profileData: CreateProfileDto, user: User){
         const profile = await this.prisma.profile.findUnique({
             where: {
@@ -34,7 +44,12 @@ export class UserService {
                     user: {
                         select: {
                             userName: true,
-                            email: true
+                            email: true,
+                            roles: {
+                                select: {
+                                    role: true
+                                }
+                            }
                         }
                     }
                 }
@@ -59,7 +74,12 @@ export class UserService {
                     user: {
                         select: {
                             userName: true,
-                            email: true
+                            email: true,
+                            roles: {
+                                select: {
+                                    role: true
+                                }
+                            }
                         }
                     }
                 }
@@ -87,7 +107,12 @@ export class UserService {
                 user: {
                     select: {
                         userName: true,
-                        email: true
+                        email: true,
+                        roles: {
+                            select: {
+                                role: true
+                            }
+                        }
                     }
                 }
             }
@@ -109,7 +134,7 @@ export class UserService {
         if(!profile){
             response = await this.prisma.profile.create({
                 data: {
-                    avatarUrl: file.filename,
+                    avatarUrl: `${this.getPath()}/${file.filename}`,
                     userId: user.id
                 },
                 select: {
@@ -133,7 +158,7 @@ export class UserService {
         }else{
             response = await this.prisma.profile.update({
                 data: {
-                    avatarUrl: file.filename  
+                    avatarUrl: `${this.getPath()}/${file.filename}`,
                 },
                 where: {
                     id: profile.id

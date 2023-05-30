@@ -8,6 +8,16 @@ import { UpdateStoreDto } from "./Dto/update-store.dto";
 export class StoreService {
     constructor( private readonly prisma: PrismaService){};
 
+    private getPath(){
+        let path: string[] | string = __dirname.split('/');
+        path.pop();
+        path.pop();
+        path.push('files');
+        path.push('store');
+        path = path.join('/');
+        return path;
+    }
+
     async getStores(user) {
         const stores = await this.prisma.store.findMany({
             where: {
@@ -18,6 +28,7 @@ export class StoreService {
                 id: true,
                 name: true,
                 location: true,
+                images: true,
                 user: {
                     select: {
                         userName: true,
@@ -29,7 +40,7 @@ export class StoreService {
                         name: true,
                         description: true
                     }
-                }
+                },
             }
         })
         if(!stores[0]){
@@ -90,8 +101,11 @@ export class StoreService {
     }
 
     async updateStore(user, storeId, updateStoreDto: UpdateStoreDto){
-        const isStoreExist = await this.prisma.store.findUnique({
-            where: { id: storeId}
+        const isStoreExist = await this.prisma.store.findFirst({
+            where: { 
+                id: storeId,
+                userId: user.id
+            }
         })
 
         if(!isStoreExist){
@@ -143,9 +157,11 @@ export class StoreService {
     }
 
     async deleteStore(storeId: number, user){
-        const store = await this.prisma.store.findUnique({
+        const store = await this.prisma.store.findFirst({
             where: {
-                id: storeId
+                id: storeId,
+                userId: user.id,
+                isDeleted: false
             }
         })
 
@@ -171,11 +187,34 @@ export class StoreService {
                 }
              }
         })
-        
+
+
         return {
             message: 'Store deleted successfully !!',
             deletedStore
         }
+    }
+
+    async uploadImage(file, user, storeId){
+        if(!file){
+            throw new NotFoundException('No Image provided !!');
+        }
+        const store = await this.prisma.store.findUnique({
+            where: { id: storeId }
+        })
+        if(!store){
+            throw new NotFoundException('No such store exist !!');
+        }
+
+        const storeImage = await this.prisma.storeImage.create({
+            data: {
+                url: `${this.getPath()}/${file.filename}`,
+                storeId
+            }
+        })
+        return {
+            message: "Image uploaded successfully !!!"
+        };
     }
 
 }

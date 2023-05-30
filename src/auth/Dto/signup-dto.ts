@@ -1,8 +1,8 @@
 import { AccountType } from "@prisma/client";
-import { IsEmail, IsEnum, IsMobilePhone, IsNotEmpty, IsOptional, IsString, Length, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsEnum, IsMobilePhone, IsNotEmpty, IsNumberString, IsOptional, IsString, Length, MaxLength, MinLength } from "class-validator";
 
 
-export class SignupUserDto {
+export class SignupDto {
     @IsString()
     @IsNotEmpty()
     userName: string;
@@ -17,7 +17,4 @@ export class SignupUserDto {
     @MaxLength(15)
     password: string;
 
-    @IsOptional()
-    @Length(10, 10)
-    phoneNumber: string;
 }

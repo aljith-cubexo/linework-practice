@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Post, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Post, Req, SetMetadata, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateProfileDto } from './Dto/create-profile.dto';
 import { AuthGuard } from 'src/guards/auth.guard';
@@ -17,12 +17,12 @@ const fileConfig = {
     }
 }
 
+@UseGuards(AuthGuard)
 @Controller('user')
 export class UserController {
     constructor(private readonly userService: UserService){};
 
     @Get('profile')
-    @UseGuards(AuthGuard) 
     getProfile(
         @Req() req
     ){
@@ -31,7 +31,6 @@ export class UserController {
     }
 
     @Post('profile')
-    @UseGuards(AuthGuard)
     updateProfile(
         @Body() createProfileDto: CreateProfileDto, 
         @Req() req
@@ -40,7 +39,6 @@ export class UserController {
     }
 
     @Post('upload-profile')
-    @UseGuards(AuthGuard)
     @UseInterceptors(
         FileInterceptor('file', {
             storage: diskStorage(fileConfig)
