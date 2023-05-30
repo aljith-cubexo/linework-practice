@@ -7,12 +7,22 @@ import { CreateProductDto } from "./Dto/create-product.dto";
 export class ProductService {
     constructor(private readonly prisma: PrismaService){};
 
-    private getPath(){
+    private getPathToProducts(){
         let path: string[] | string = __dirname.split('/');
         path.pop();
         path.pop();
         path.push('files');
         path.push('products');
+        path = path.join('/');
+        return path;
+    }
+
+    private getPathToProductsGallery(){
+        let path: string[] | string = __dirname.split('/');
+        path.pop();
+        path.pop();
+        path.push('files');
+        path.push('productsGallery');
         path = path.join('/');
         return path;
     }
@@ -28,6 +38,7 @@ export class ProductService {
                         id: true,
                         name: true,
                         image: true,
+                        gallery: true,
                         price: true,
                         currency: true,
                         tax: true,
@@ -105,7 +116,7 @@ export class ProductService {
 
         const product = await this.prisma.product.update({
             data: {
-                image: `${this.getPath()}/${file.filename}`
+                image: `${this.getPathToProducts()}/${file.filename}`
             },
             where: {
                 id: productId
@@ -114,6 +125,35 @@ export class ProductService {
 
         return {
             message: 'Product image uploaded Successfully !!'
+        }
+    }
+
+    async uploadGalleryImage(file, user, productId, data){
+        if(!file){
+            throw new NotFoundException('No Image provided !!');
+        }
+        
+        const isProductExist = await this.prisma.product.findFirst({
+            where: {
+                id: productId,
+                userId: user.id
+            }
+        })
+
+        if(!isProductExist){
+            throw new NotFoundException('No such product exist !!');
+        }
+
+        const productImage = await this.prisma.productImage.create({
+            data: {
+                url: `${this.getPathToProductsGallery()}/${file.filename}`,
+                altText: data.altText,
+                productId
+            }
+        })
+        
+        return {
+            message: 'Gallery image uploaded Successfully !!'
         }
     }
 }

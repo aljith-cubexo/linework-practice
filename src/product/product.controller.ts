@@ -19,6 +19,16 @@ const fileConfig = {
     }
 }
 
+const galleryFileConfig = {
+    destination: './files/productsGallery',
+    filename: (req, file, cb) => {
+        const uniqueSuffix = uuid();
+        const fileExtension = extname(file.originalname);
+        const uniqueFileName = uniqueSuffix + fileExtension;
+        cb(null, uniqueFileName);
+    }
+}
+
 
 @Controller('product')
 @Roles(RoleType.SELLER, RoleType.ADMIN)
@@ -55,6 +65,21 @@ export class ProductController {
         @Param('productId', ParseIntPipe) productId: number
     ){
         return this.productService.uploadProductImage(file, user, productId);
+    }
+
+    @Post('upload-gallery-image/:productId')
+    @UseInterceptors(
+        FileInterceptor('file', {
+            storage: diskStorage(galleryFileConfig)
+        })
+    )
+    public async uploadGalleryImage(
+        @UploadedFile('file') file: Express.Multer.File,
+        @Req() { user },
+        @Param('productId', ParseIntPipe) productId: number,
+        @Body() data
+    ){
+        return this.productService.uploadGalleryImage(file, user, productId, data);
     }
 
 }
