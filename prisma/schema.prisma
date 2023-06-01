@@ -17,23 +17,24 @@ enum AccountType {
 }
 
 model User {
-  id             Int              @id @default(autoincrement())
-  email          String           @unique
-  userName       String?          @unique
-  password       String?
-  phoneNumber    String?          @unique
-  accountType    AccountType      @default(BASIC)
-  isDeleted      Boolean?         @default(false)
-  createdAt      DateTime?        @default(now())
-  updatedAt      DateTime?        @updatedAt
-  roles          Role?
-  Profile        Profile?
-  Store          Store[]
-  Cart           Cart[]
-  Order          Order[]
-  Product        Product[]
-  UserPermission UserPermission[] @relation("seller")
-  worker         UserPermission[] @relation("worker")
+  id                Int              @id @default(autoincrement())
+  email             String           @unique
+  userName          String?          @unique
+  password          String?
+  phoneNumber       String?          @unique
+  accountType       AccountType      @default(BASIC)
+  isDeleted         Boolean?         @default(false)
+  createdAt         DateTime?        @default(now())
+  updatedAt         DateTime?        @updatedAt
+  isEmailVerifiedAt DateTime?
+  roles             Role?
+  Profile           Profile?
+  Store             Store[]
+  Cart              Cart[]
+  Order             Order[]
+  Product           Product[]
+  UserPermission    UserPermission[] @relation("seller")
+  worker            UserPermission[] @relation("worker")
 
   ProductReview   ProductReview[]
   productWishList productWishList[]

@@ -12,6 +12,7 @@ Table User {
   isDeleted Boolean [default: false]
   createdAt DateTime [default: `now()`]
   updatedAt DateTime
+  isEmailVerifiedAt DateTime
   roles Role
   Profile Profile
   Store Store [not null]

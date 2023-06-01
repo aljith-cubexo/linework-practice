@@ -14,7 +14,7 @@ export class ProductService {
         path.push('files');
         path.push('products');
         path = path.join('/');
-        return path;
+        return path;   
     }
 
     private getPathToProductsGallery(){
@@ -25,6 +25,46 @@ export class ProductService {
         path.push('productsGallery');
         path = path.join('/');
         return path;
+    }
+
+    async getAllProducts (){
+        const products = await this.prisma.product.findMany({
+            select: {
+                id: true,
+                name: true,
+                image: true,
+                gallery: true,
+                price: true,
+                currency: true,
+                tax: true,
+                shipping: true,
+                brand: true,
+                country: true,
+                size: true,
+                description: true,
+                condition: true,
+                note: true,
+                total: true,
+                sold: true,
+                remained: true,
+                category: {
+                    select: {
+                        name: true,
+                        description: true
+                    }
+                }
+            }
+        })
+
+        if(!products[0]){
+            return {
+                message: "No products available !!"
+            }
+        }
+
+        return {
+            products
+        }
     }
 
     async getProducts (user, storeId: number){
@@ -131,6 +171,9 @@ export class ProductService {
     async uploadGalleryImage(file, user, productId, data){
         if(!file){
             throw new NotFoundException('No Image provided !!');
+        }
+        if(!data.altText){
+            throw new NotFoundException('No alt text provided !!')
         }
         
         const isProductExist = await this.prisma.product.findFirst({

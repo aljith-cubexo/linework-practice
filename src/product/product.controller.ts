@@ -36,6 +36,11 @@ const galleryFileConfig = {
 export class ProductController {
     constructor(private readonly productService: ProductService){};
 
+    @Get('')
+    public async getAllProducts(){
+        return this.productService.getAllProducts();
+    }
+
     @Get('/:storeId')
     public async getProducts(
         @Req() { user },

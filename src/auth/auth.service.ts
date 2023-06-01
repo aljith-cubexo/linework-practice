@@ -5,6 +5,7 @@ import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { SigninDto } from './Dto/signin-dto';
 import { RoleType } from '@prisma/client';
+import { EmailService } from './email.service';
 
 interface ITokenPayload {
     id: number;
@@ -15,7 +16,8 @@ interface ITokenPayload {
 export class AuthService {
     constructor( 
         private readonly prisma: PrismaService,
-        private readonly jwtService: JwtService
+        private readonly jwtService: JwtService,
+        private readonly emailService: EmailService
     ){};
 
     async signupUser(userData: SignupDto){
@@ -59,6 +61,39 @@ export class AuthService {
         });
 
         return { token }
+    }
+
+    async verifyEmail(token){
+
+        const verifiedToken = await this.jwtService.verifyAsync(token);
+        if(!verifiedToken){
+            throw new UnauthorizedException('Invalid token');
+        }
+
+        // Checking the user is present or not !
+        const user = await this.prisma.user.findUnique({
+            where: { id: verifiedToken.id}
+        })
+
+        if(!user){
+            throw new NotFoundException('No such user exist !!')
+        }
+
+        const updatedUser = await this.prisma.user.update({
+            where: {
+                id: user.id
+            },
+            data: {
+                isEmailVerifiedAt: new Date()
+            },
+            select: {
+                userName: true,
+                email: true,
+                isEmailVerifiedAt: true
+            }
+        })
+
+        return updatedUser;
     }
 
     private generateToken(payload: ITokenPayload){
@@ -109,7 +144,23 @@ export class AuthService {
                     userId: user.id
                 }
             })
+
+            return user;
         })
+
+        const token = await this.jwtService.signAsync({ id: transaction.id});
+
+        const mail = {
+            to: email,
+            subject: "Email Verification",
+            from: process.env.SENDER,
+            text: 'Email confirmation',
+            html: `Press <a href="http://localhost:3000/auth/verify/${token}"> here </a> to 
+                verify your email !`
+        }
+
+        const response =  await this.emailService.send(mail);
+        // console.log(response);
 
         return {
             message: `${roleType} signedup successfully !`

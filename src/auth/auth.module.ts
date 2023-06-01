@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants';
+import { MailService } from '@sendgrid/mail';
+import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -16,6 +18,11 @@ import { jwtConstants } from './constants';
     })
   ],
   controllers: [AuthController],
-  providers: [AuthService, PrismaService],
+  providers: [
+    AuthService, 
+    PrismaService, 
+    EmailService,
+    MailService
+  ],
 })
 export class AuthModule {}
